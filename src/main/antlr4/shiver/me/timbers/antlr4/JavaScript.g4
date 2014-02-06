@@ -1,16 +1,11 @@
-/*
-  Copyright 2008 Chris Lambrou.
-  All rights reserved.
-*/
-
 grammar JavaScript;
 
 program
-	: LT* sourceElements* LT* EOF
+	: sourceElements* EOF
 	;
 	
 sourceElements
-	: sourceElement (LT* sourceElement)*
+	: sourceElement (sourceElement)*
 	;
 	
 sourceElement
@@ -20,19 +15,19 @@ sourceElement
 
 // functions
 functionDeclaration
-	: 'function' LT* Identifier LT* formalParameterList LT* functionBody
+	: 'function' Identifier formalParameterList functionBody
 	;
 	
 functionExpression
-	: 'function' LT* Identifier? LT* formalParameterList LT* functionBody
+	: 'function' Identifier? formalParameterList functionBody
 	;
 	
 formalParameterList
-	: '(' (LT* Identifier (LT* ',' LT* Identifier)*)? LT* ')'
+	: '(' (Identifier (',' Identifier)*)? ')'
 	;
 
 functionBody
-	: '{' LT* sourceElements LT* '}'
+	: '{' sourceElements '}'
 	;
 
 // statements
@@ -54,39 +49,39 @@ statement
 	;
 	
 statementBlock
-	: '{' LT* statementList? LT* '}'
+	: '{' statementList? '}'
 	;
 	
 statementList
-	: statement (LT* statement)*
+	: statement (statement)*
 	;
 	
 variableStatement
-	: 'var' LT* variableDeclarationList (LT | ';')
+	: 'var' variableDeclarationList ';'?
 	;
 	
 variableDeclarationList
-	: variableDeclaration (LT* ',' LT* variableDeclaration)*
+	: variableDeclaration (',' variableDeclaration)*
 	;
 	
 variableDeclarationListNoIn
-	: variableDeclarationNoIn (LT* ',' LT* variableDeclarationNoIn)*
+	: variableDeclarationNoIn (',' variableDeclarationNoIn)*
 	;
 	
 variableDeclaration
-	: Identifier LT* initialiser?
+	: Identifier initialiser?
 	;
 	
 variableDeclarationNoIn
-	: Identifier LT* initialiserNoIn?
+	: Identifier initialiserNoIn?
 	;
 	
 initialiser
-	: '=' LT* assignmentExpression
+	: '=' assignmentExpression
 	;
 	
 initialiserNoIn
-	: '=' LT* assignmentExpressionNoIn
+	: '=' assignmentExpressionNoIn
 	;
 	
 emptyStatement
@@ -94,11 +89,11 @@ emptyStatement
 	;
 	
 expressionStatement
-	: expression (LT | ';')
+	: expression ';'?
 	;
 	
 ifStatement
-	: 'if' LT* '(' LT* expression LT* ')' LT* statement (LT* 'else' LT* statement)?
+	: 'if' '(' expression ')' statement ('else' statement)?
 	;
 	
 iterationStatement
@@ -109,100 +104,100 @@ iterationStatement
 	;
 	
 doWhileStatement
-	: 'do' LT* statement LT* 'while' LT* '(' expression ')' (LT | ';')
+	: 'do' statement 'while' '(' expression ')' ';'?
 	;
 	
 whileStatement
-	: 'while' LT* '(' LT* expression LT* ')' LT* statement
+	: 'while' '(' expression ')' statement
 	;
 	
 forStatement
-	: 'for' LT* '(' (LT* forStatementInitialiserPart)? LT* ';' (LT* expression)? LT* ';' (LT* expression)? LT* ')' LT* statement
+	: 'for' '(' (forStatementInitialiserPart)? ';' (expression)? ';' (expression)? ')' statement
 	;
 	
 forStatementInitialiserPart
 	: expressionNoIn
-	| 'var' LT* variableDeclarationListNoIn
+	| 'var' variableDeclarationListNoIn
 	;
 	
 forInStatement
-	: 'for' LT* '(' LT* forInStatementInitialiserPart LT* 'in' LT* expression LT* ')' LT* statement
+	: 'for' '(' forInStatementInitialiserPart 'in' expression ')' statement
 	;
 	
 forInStatementInitialiserPart
 	: leftHandSideExpression
-	| 'var' LT* variableDeclarationNoIn
+	| 'var' variableDeclarationNoIn
 	;
 
 continueStatement
-	: 'continue' Identifier? (LT | ';')
+	: 'continue' Identifier? ';'?
 	;
 
 breakStatement
-	: 'break' Identifier? (LT | ';')
+	: 'break' Identifier? ';'?
 	;
 
 returnStatement
-	: 'return' expression? (LT | ';')
+	: 'return' expression? ';'?
 	;
 	
 withStatement
-	: 'with' LT* '(' LT* expression LT* ')' LT* statement
+	: 'with' '(' expression ')' statement
 	;
 
 labelledStatement
-	: Identifier LT* ':' LT* statement
+	: Identifier ':' statement
 	;
 	
 switchStatement
-	: 'switch' LT* '(' LT* expression LT* ')' LT* caseBlock
+	: 'switch' '(' expression ')' caseBlock
 	;
 	
 caseBlock
-	: '{' (LT* caseClause)* (LT* defaultClause (LT* caseClause)*)? LT* '}'
+	: '{' (caseClause)* (defaultClause (caseClause)*)? '}'
 	;
 
 caseClause
-	: 'case' LT* expression LT* ':' LT* statementList?
+	: 'case' expression ':' statementList?
 	;
 	
 defaultClause
-	: 'default' LT* ':' LT* statementList?
+	: 'default' ':' statementList?
 	;
 	
 throwStatement
-	: 'throw' expression (LT | ';')
+	: 'throw' expression ';'?
 	;
 
 tryStatement
-	: 'try' LT* statementBlock LT* (finallyClause | catchClause (LT* finallyClause)?)
+	: 'try' statementBlock (finallyClause | catchClause (finallyClause)?)
 	;
        
 catchClause
-	: 'catch' LT* '(' LT* Identifier LT* ')' LT* statementBlock
+	: 'catch' '(' Identifier ')' statementBlock
 	;
 	
 finallyClause
-	: 'finally' LT* statementBlock
+	: 'finally' statementBlock
 	;
 
 // expressions
 expression
-	: assignmentExpression (LT* ',' LT* assignmentExpression)*
+	: assignmentExpression (',' assignmentExpression)*
 	;
 	
 expressionNoIn
-	: assignmentExpressionNoIn (LT* ',' LT* assignmentExpressionNoIn)*
+	: assignmentExpressionNoIn (',' assignmentExpressionNoIn)*
 	;
 	
 assignmentExpression
 	: conditionalExpression
-	| leftHandSideExpression LT* assignmentOperator LT* assignmentExpression
+	| leftHandSideExpression assignmentOperator assignmentExpression
 	;
 	
 assignmentExpressionNoIn
 	: conditionalExpressionNoIn
-	| leftHandSideExpression LT* assignmentOperator LT* assignmentExpressionNoIn
+	| leftHandSideExpression assignmentOperator assignmentExpressionNoIn
 	;
 	
 leftHandSideExpression
@@ -212,11 +207,11 @@ leftHandSideExpression
 	
 newExpression
 	: memberExpression
-	| 'new' LT* newExpression
+	| 'new' newExpression
 	;
 	
 memberExpression
-	: (primaryExpression | functionExpression | 'new' LT* memberExpression LT* arguments) (LT* memberExpressionSuffix)*
+	: (primaryExpression | functionExpression | 'new' memberExpression arguments) (memberExpressionSuffix)*
 	;
 	
 memberExpressionSuffix
@@ -225,7 +220,7 @@ memberExpressionSuffix
 	;
 
 callExpression
-	: memberExpression LT* arguments (LT* callExpressionSuffix)*
+	: memberExpression arguments (callExpressionSuffix)*
 	;
 	
 callExpressionSuffix
@@ -235,15 +230,15 @@ callExpressionSuffix
 	;
 
 arguments
-	: '(' (LT* assignmentExpression (LT* ',' LT* assignmentExpression)*)? LT* ')'
+	: '(' (assignmentExpression (',' assignmentExpression)*)? ')'
 	;
 	
 indexSuffix
-	: '[' LT* expression LT* ']'
+	: '[' expression ']'
 	;	
 	
 propertyReferenceSuffix
-	: '.' LT* Identifier
+	: '.' Identifier
 	;
 	
 assignmentOperator
@@ -251,79 +246,79 @@ assignmentOperator
 	;
 
 conditionalExpression
-	: logicalORExpression (LT* '?' LT* assignmentExpression LT* ':' LT* assignmentExpression)?
+	: logicalORExpression ('?' assignmentExpression ':' assignmentExpression)?
 	;
 
 conditionalExpressionNoIn
-	: logicalORExpressionNoIn (LT* '?' LT* assignmentExpressionNoIn LT* ':' LT* assignmentExpressionNoIn)?
+	: logicalORExpressionNoIn ('?' assignmentExpressionNoIn ':' assignmentExpressionNoIn)?
 	;
 
 logicalORExpression
-	: logicalANDExpression (LT* '||' LT* logicalANDExpression)*
+	: logicalANDExpression ('||' logicalANDExpression)*
 	;
 	
 logicalORExpressionNoIn
-	: logicalANDExpressionNoIn (LT* '||' LT* logicalANDExpressionNoIn)*
+	: logicalANDExpressionNoIn ('||' logicalANDExpressionNoIn)*
 	;
 	
 logicalANDExpression
-	: bitwiseORExpression (LT* '&&' LT* bitwiseORExpression)*
+	: bitwiseORExpression ('&&' bitwiseORExpression)*
 	;
 	
 logicalANDExpressionNoIn
-	: bitwiseORExpressionNoIn (LT* '&&' LT* bitwiseORExpressionNoIn)*
+	: bitwiseORExpressionNoIn ('&&' bitwiseORExpressionNoIn)*
 	;
 	
 bitwiseORExpression
-	: bitwiseXORExpression (LT* '|' LT* bitwiseXORExpression)*
+	: bitwiseXORExpression ('|' bitwiseXORExpression)*
 	;
 	
 bitwiseORExpressionNoIn
-	: bitwiseXORExpressionNoIn (LT* '|' LT* bitwiseXORExpressionNoIn)*
+	: bitwiseXORExpressionNoIn ('|' bitwiseXORExpressionNoIn)*
 	;
 	
 bitwiseXORExpression
-	: bitwiseANDExpression (LT* '^' LT* bitwiseANDExpression)*
+	: bitwiseANDExpression ('^' bitwiseANDExpression)*
 	;
 	
 bitwiseXORExpressionNoIn
-	: bitwiseANDExpressionNoIn (LT* '^' LT* bitwiseANDExpressionNoIn)*
+	: bitwiseANDExpressionNoIn ('^' bitwiseANDExpressionNoIn)*
 	;
 	
 bitwiseANDExpression
-	: equalityExpression (LT* '&' LT* equalityExpression)*
+	: equalityExpression ('&' equalityExpression)*
 	;
 	
 bitwiseANDExpressionNoIn
-	: equalityExpressionNoIn (LT* '&' LT* equalityExpressionNoIn)*
+	: equalityExpressionNoIn ('&' equalityExpressionNoIn)*
 	;
 	
 equalityExpression
-	: relationalExpression (LT* ('==' | '!=' | '===' | '!==') LT* relationalExpression)*
+	: relationalExpression (('==' | '!=' | '===' | '!==') relationalExpression)*
 	;
 
 equalityExpressionNoIn
-	: relationalExpressionNoIn (LT* ('==' | '!=' | '===' | '!==') LT* relationalExpressionNoIn)*
+	: relationalExpressionNoIn (('==' | '!=' | '===' | '!==') relationalExpressionNoIn)*
 	;
 	
 relationalExpression
-	: shiftExpression (LT* ('<' | '>' | '<=' | '>=' | 'instanceof' | 'in') LT* shiftExpression)*
+	: shiftExpression (('<' | '>' | '<=' | '>=' | 'instanceof' | 'in') shiftExpression)*
 	;
 
 relationalExpressionNoIn
-	: shiftExpression (LT* ('<' | '>' | '<=' | '>=' | 'instanceof') LT* shiftExpression)*
+	: shiftExpression (('<' | '>' | '<=' | '>=' | 'instanceof') shiftExpression)*
 	;
 
 shiftExpression
-	: additiveExpression (LT* ('<<' | '>>' | '>>>') LT* additiveExpression)*
+	: additiveExpression (('<<' | '>>' | '>>>') additiveExpression)*
 	;
 
 additiveExpression
-	: multiplicativeExpression (LT* ('+' | '-') LT* multiplicativeExpression)*
+	: multiplicativeExpression (('+' | '-') multiplicativeExpression)*
 	;
 
 multiplicativeExpression
-	: unaryExpression (LT* ('*' | '/' | '%') LT* unaryExpression)*
+	: unaryExpression (('*' | '/' | '%') unaryExpression)*
 	;
 
 unaryExpression
@@ -341,21 +336,21 @@ primaryExpression
 	| literal
 	| arrayLiteral
 	| objectLiteral
-	| '(' LT* expression LT* ')'
+	| '(' expression ')'
 	;
 	
 // arrayLiteral definition.
 arrayLiteral
-	: '[' LT* assignmentExpression? (LT* ',' (LT* assignmentExpression)?)* LT* ']'
+	: '[' assignmentExpression? (',' (assignmentExpression)?)* ']'
 	;
        
 // objectLiteral definition.
 objectLiteral
-	: '{' LT* propertyNameAndValue (LT* ',' LT* propertyNameAndValue)* LT* '}'
+	: '{' propertyNameAndValue (',' propertyNameAndValue)* '}'
 	;
 	
 propertyNameAndValue
-	: propertyName LT* ':' LT* assignmentExpression
+	: propertyName ':' assignmentExpression
 	;
 
 propertyName
@@ -406,7 +401,15 @@ fragment NonEscapeCharacter
 	;
 
 fragment SingleEscapeCharacter
-	: '\'' | '"' | '\\' | 'b' | 'f' | 'n' | 'r' | 't' | 'v'
+	: '\''
+	| '"'
+	| '\\'
+	| 'b'
+	| 'f'
+	| 'n'
+	| 'r'
+	| 't'
+	| 'v'
 	;
 
 fragment EscapeCharacter
@@ -866,19 +869,15 @@ fragment UnicodeConnectorPunctuation	// Any character in the Unicode category "C
 	| '\uFF3F'
 	| '\uFF65'
 	;
-	
+
+WhiteSpace
+	: [ \t\f\u00A0\n\r\u2028\u2029\u000C]+ -> skip
+	;
+
 Comment
-	: '/*' ~'*' .*? '*/' -> channel(HIDDEN)
+	: '/*' ~'*' .*? '*/' -> skip
 	;
 
 LineComment
-	: '//' ~[\r\n\u2028\u2029]* -> channel(HIDDEN)
-	;
-
-LT
-	: [\n\r\u2028\u2029]+ -> skip
-    ;
-
-WhiteSpace
-	: [ \t\f\u00A0]+ -> skip
+	: '//' ~[\r\n\f\u2028\u2029]* -> skip
 	;
