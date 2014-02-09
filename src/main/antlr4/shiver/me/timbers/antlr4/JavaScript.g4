@@ -5,7 +5,7 @@ program
 	;
 	
 sourceElements
-	: sourceElement (sourceElement)*
+	: sourceElement sourceElement*
 	;
 	
 sourceElement
@@ -53,7 +53,7 @@ statementBlock
 	;
 	
 statementList
-	: statement (statement)*
+	: statement statement*
 	;
 	
 variableStatement
@@ -211,7 +211,7 @@ newExpression
 	;
 	
 memberExpression
-	: (primaryExpression | functionExpression | 'new' memberExpression arguments) (memberExpressionSuffix)*
+	: (primaryExpression | functionExpression | 'new' memberExpression arguments) memberExpressionSuffix*
 	;
 	
 memberExpressionSuffix
@@ -220,7 +220,7 @@ memberExpressionSuffix
 	;
 
 callExpression
-	: memberExpression arguments (callExpressionSuffix)*
+	: memberExpression arguments callExpressionSuffix*
 	;
 	
 callExpressionSuffix
@@ -870,14 +870,14 @@ fragment UnicodeConnectorPunctuation	// Any character in the Unicode category "C
 	| '\uFF65'
 	;
 
-WhiteSpace
+WS
 	: [ \t\f\u00A0\n\r\u2028\u2029\u000C]+ -> skip
 	;
 
-Comment
+COMMENT
 	: '/*' ~'*' .*? '*/' -> skip
 	;
 
-LineComment
+LINE_COMMENT
 	: '//' ~[\r\n\f\u2028\u2029]* -> skip
 	;
